@@ -1,0 +1,176 @@
+components:
+  responses:
+    DEFAULT_ERROR:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+      description: Default error response
+    UNPROCESSABLE_ENTITY:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+      description: Unprocessable Entity
+  schemas:
+    Analogy:
+      properties:
+        a:
+          type: string
+        b:
+          type: string
+        c:
+          type: string
+        completions:
+          items:
+            type: string
+          type: array
+        n:
+          type: integer
+      type: object
+    Error:
+      properties:
+        code:
+          description: Error code
+          type: integer
+        errors:
+          description: Errors
+          type: object
+        message:
+          description: Error message
+          type: string
+        status:
+          description: Error name
+          type: string
+      type: object
+    Neighbours:
+      properties:
+        n:
+          type: integer
+        neighbours:
+          items:
+            type: string
+          type: array
+        word:
+          type: string
+      type: object
+    PaginationMetadata:
+      properties:
+        first_page:
+          type: integer
+        last_page:
+          type: integer
+        next_page:
+          type: integer
+        page:
+          type: integer
+        previous_page:
+          type: integer
+        total:
+          type: integer
+        total_pages:
+          type: integer
+      type: object
+    Vector:
+      properties:
+        word:
+          type: string
+      type: object
+info:
+  title: Word2Med API
+  version: v1
+openapi: 3.0.2
+paths:
+  /analogy:
+    get:
+      description: For words a, b, and c, get a list of n words d which complete the
+        analogy "a is to b as c is to d"
+      parameters:
+      - in: query
+        name: b
+        required: false
+        schema:
+          type: string
+      - in: query
+        name: a
+        required: false
+        schema:
+          type: string
+      - in: query
+        name: c
+        required: false
+        schema:
+          type: string
+      - in: query
+        name: n
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Analogy'
+          description: OK
+        '422':
+          $ref: '#/components/responses/UNPROCESSABLE_ENTITY'
+        default:
+          $ref: '#/components/responses/DEFAULT_ERROR'
+      summary: Get completions to an analogy
+      tags:
+      - word2med
+  /neighbours:
+    get:
+      description: Returns a list of the n closest vectors to a given word, with the
+        closest coming first.
+      parameters:
+      - in: query
+        name: word
+        required: false
+        schema:
+          type: string
+      - in: query
+        name: n
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Neighbours'
+          description: OK
+        '422':
+          $ref: '#/components/responses/UNPROCESSABLE_ENTITY'
+        default:
+          $ref: '#/components/responses/DEFAULT_ERROR'
+      summary: Get the most similar vectors to a word
+      tags:
+      - word2med
+  /vector:
+    get:
+      parameters:
+      - in: query
+        name: word
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Vector'
+          description: OK
+        '422':
+          $ref: '#/components/responses/UNPROCESSABLE_ENTITY'
+        default:
+          $ref: '#/components/responses/DEFAULT_ERROR'
+      summary: Get the vector representation of a word
+      tags:
+      - word2med
+tags:
+- description: Perform actions against the Word2Med model
+  name: word2med
