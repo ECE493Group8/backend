@@ -1,97 +1,70 @@
-from flask import Flask, request
-from flask_restful import Resource, Api, reqparse
-from marshmallow import Schema, fields, post_load, exceptions
-from marshmallow.exceptions import ValidationError
-from flasgger import Swagger
-from typing import List
-import json
+from flask import Flask
+from flask.views import MethodView
+from flask_smorest import Api, Blueprint, abort
+from traceback import print_exc
 
 from word2med import Word2Med
+from schemas import *
 
 # Init flask app
 app = Flask(__name__)
-app.config['SWAGGER'] = {
-    'title': 'My API',
-    'uiversion': 3,
-}
+app.config["API_TITLE"] = "Word2Med API"
+app.config["API_VERSION"] = "v1"
+app.config["OPENAPI_VERSION"] = "3.0.2"
 api = Api(app)
-swagger = Swagger(app)
+
+# Create blueprint
+blp = Blueprint("word2med", "word2med", url_prefix="/", description="Perform actions against the Word2Med model")
 
 # Init model
 model = Word2Med()
 
-# Init arg parser
-parser = reqparse.RequestParser()
-
-# Request Bodies
-class VectorPayload(Schema):
-    word = fields.Str()
-
-class NeighboursPayload(Schema):
-    word = fields.Str()
-    n = fields.Integer()
-
-class AnalogyPayload(Schema):
-    a = fields.Str()
-    b = fields.Str()
-    c = fields.Str()
-    n = fields.Integer()
-    
-class Vector(Resource):
-    def post(self):
-        """
-        Get the vector representation of a word
-        ---
-        parameters:
-          - name: word
-            in: body
-            type: string
-            required: true   
-        """
-        # Parse and validate post body
+@blp.route('/vector')
+class Vector(MethodView):
+    @blp.arguments(VectorQuerySchema, location='query')
+    @blp.response(200, VectorSchema)
+    def get(self, args):
+        """Get the vector representation of a word"""
         try:
-            schema = VectorPayload()
-            payload = schema.loads(request.data)
-        except ValidationError as e:
-            return f"Invalid request body: {e}", 400
+            return VectorSchema().load({'word': args['word']})
+        except Exception as e:
+            print_exc()
+            abort(500)
 
-        # Get vector representation from model
-        return model.get_vector(**payload), 200
+@blp.route('/neighbours')
+class Neighbours(MethodView):
+    @blp.arguments(NeighboursQuerySchema, location='query')
+    @blp.response(200, NeighboursSchema)
+    def get(self, args):
+        """Get the most similar vectors to a word
 
-class Neighbours(Resource):
-    def post(self):
+        Returns a list of the n closest vectors to a given word, with the closest coming first.
         """
-        Get the n closest words to a word
-        """
-        # Parse and validate post body
         try:
-            schema = NeighboursPayload()
-            payload = schema.loads(request.data)
-        except ValidationError as e:
-            return f"Invalid request body: {e}", 400
+            return NeighboursSchema().load({
+                'neighbours': model.get_n_closest(args['word'], args['n']),
+                'n': args['n']
+            })
+        except Exception as e:
+            print_exc()
+            abort(500)
 
-        # Get n closest words from model
-        return model.get_n_closest(**payload), 200
+@blp.route('/analogy')
+class Analogy(MethodView):
+    @blp.arguments(AnalogyQuerySchema, location='query')
+    @blp.response(200, AnalogySchema)
+    def get(self, args):
+        """Get completions to an analogy
 
-class Analogy(Resource):
-    def post(self):
+        For words a, b, and c, get a list of n words d which complete the analogy "a is to b as c is to d"
         """
-        For words a, b, and c, get a list of words d which complete the analogy "a is to b as c is to d"
-        """
-        # Parse and validate post body
         try:
-            schema = AnalogyPayload()
-            payload = schema.loads(request.data)
-        except ValidationError as e:
-            return f"Invalid request body: {e}", 400
-        
-        # Get completed analogy from model
-        return model.complete_analogy(**payload), 200
+            return AnalogySchema().load(args | {'completions': model.complete_analogy(*args)})
+        except:
+            print_exc()
+            abort(500)
 
-# Endpoint for each resource
-api.add_resource(Vector, '/vector')
-api.add_resource(Neighbours, '/neighbourhood')
-api.add_resource(Analogy, '/analogy')
+api.register_blueprint(blp)
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run(debug=True)
