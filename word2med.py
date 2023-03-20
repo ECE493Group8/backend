@@ -81,25 +81,25 @@ class Word2Med:
             ValueError if the number of words to embed is less than
                 TSNE_PERPLEXITY.
         """
-        word_list = []
-        vector_list = []
+        words_list = []
+        vectors_list = []
         for word in words:
             # Append the current word and its vector to the word list and vector
             # list.
-            word_list.append(word)
-            vector_list.append(self.model.wv[word])
+            words_list.append(word)
+            vectors_list.append(self.model.wv[word])
             # For each similar word to the current word, append the similar word
             # and its vector to the word list and vector list.
             for similar_word, _ in self.model.wv.most_similar(word, topn=n):
-                word_list.append(similar_word)
-                vector_list.append(self.model.wv[similar_word])
+                words_list.append(similar_word)
+                vectors_list.append(self.model.wv[similar_word])
 
         # We have to have at least TSNE_PERPLEXITY vectors to embed in order for
         # TSNE to work. Ensure that this requirement is met.
-        if len(vector_list) < int(Word2Med.TSNE_PERPLEXITY):
+        if len(vectors_list) < int(Word2Med.TSNE_PERPLEXITY):
             raise ValueError("Not enough samples provided")
 
-        vectors = np.array(vector_list)
+        vectors = np.array(vectors_list)
 
         # Embed the vectors.
         tsne = TSNE(n_components=Word2Med.EMBEDDING_DIMENSION,
@@ -108,7 +108,7 @@ class Word2Med:
         embedded_vectors = tsne.fit_transform(vectors)
         embedded_vectors_list = embedded_vectors.tolist()
 
-        return word_list, embedded_vectors_list
+        return words_list, embedded_vectors_list
 
 
 if __name__ == "__main__":
