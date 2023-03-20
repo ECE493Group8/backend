@@ -112,8 +112,6 @@ class Word2Med:
 
 
 if __name__ == "__main__":
-    # TODO: Design proper tests for this eventually.
-
     m = Word2Med("./trained_models/test/test.model")
 
     from pprint import pprint
