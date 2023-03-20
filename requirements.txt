@@ -7,6 +7,7 @@ Flask==2.2.3
 flask-rest-api==0.17.1
 Flask-RESTful==0.3.9
 flask-smorest==0.40.0
+gensim==4.3.0
 itsdangerous==2.1.2
 Jinja2==3.1.2
 jsonschema==4.17.3
@@ -17,6 +18,7 @@ packaging==23.0
 pyrsistent==0.19.3
 pytz==2022.7.1
 PyYAML==6.0
+scikit-learn==1.2.2
 six==1.16.0
 webargs==8.2.0
 Werkzeug==2.2.3
