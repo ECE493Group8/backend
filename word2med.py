@@ -13,7 +13,8 @@ class Word2Med:
     TSNE_PERPLEXITY = 30.0
 
     def __init__(self, model_path: str):
-        self.model = MalamudWord2Vec.load(model_path)
+        if model_path:
+            self.model = MalamudWord2Vec.load(model_path)
 
     def get_vector(self, word: str) -> List[float]:
         """Get the closest n words to the given word.
