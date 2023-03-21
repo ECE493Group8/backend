@@ -22,11 +22,29 @@ components:
         c:
           type: string
         completions:
-          items:
-            type: string
+          items: {}
           type: array
         n:
           type: integer
+      type: object
+    Embedding:
+      properties:
+        embeddings_list:
+          items:
+            items:
+              type: number
+            type: array
+          type: array
+        n:
+          type: integer
+        words:
+          items:
+            type: string
+          type: array
+        words_list:
+          items:
+            type: string
+          type: array
       type: object
     Error:
       properties:
@@ -49,10 +67,13 @@ components:
           type: integer
         neighbours:
           items:
+            items: {}
+            type: array
+          type: array
+        words:
+          items:
             type: string
           type: array
-        word:
-          type: string
       type: object
     PaginationMetadata:
       properties:
@@ -73,6 +94,10 @@ components:
       type: object
     Vector:
       properties:
+        vector:
+          items:
+            type: number
+          type: array
         word:
           type: string
       type: object
@@ -92,11 +117,6 @@ paths:
         schema:
           type: string
       - in: query
-        name: a
-        required: false
-        schema:
-          type: string
-      - in: query
         name: c
         required: false
         schema:
@@ -106,6 +126,11 @@ paths:
         required: false
         schema:
           type: integer
+      - in: query
+        name: a
+        required: false
+        schema:
+          type: string
       responses:
         '200':
           content:
@@ -120,16 +145,53 @@ paths:
       summary: Get completions to an analogy
       tags:
       - word2med
-  /neighbours:
+  /embeddings:
     get:
-      description: Returns a list of the n closest vectors to a given word, with the
-        closest coming first.
+      description: For the list of words, return a 2-dimensional embedding for each
+        word and its neighbouring words.
       parameters:
-      - in: query
-        name: word
+      - explode: true
+        in: query
+        name: words
         required: false
         schema:
-          type: string
+          items:
+            type: string
+          type: array
+        style: form
+      - in: query
+        name: n
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Embedding'
+          description: OK
+        '422':
+          $ref: '#/components/responses/UNPROCESSABLE_ENTITY'
+        default:
+          $ref: '#/components/responses/DEFAULT_ERROR'
+      summary: Get the embeddings of words and their neighbours
+      tags:
+      - word2med
+  /neighbours:
+    get:
+      description: For each input word, a list of the n closest words is returned,
+        with the closest coming first.
+      parameters:
+      - explode: true
+        in: query
+        name: words
+        required: false
+        schema:
+          items:
+            type: string
+          type: array
+        style: form
       - in: query
         name: n
         required: false
@@ -146,7 +208,7 @@ paths:
           $ref: '#/components/responses/UNPROCESSABLE_ENTITY'
         default:
           $ref: '#/components/responses/DEFAULT_ERROR'
-      summary: Get the most similar vectors to a word
+      summary: From a list of words, get the most similar words to each of them
       tags:
       - word2med
   /vector:

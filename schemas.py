@@ -6,7 +6,7 @@ class VectorQuerySchema(Schema):
     word = fields.Str(required=True)
 
 class NeighboursQuerySchema(Schema):
-    word = fields.Str()
+    words = fields.List(fields.Str())
     n = fields.Integer()
 
 class AnalogyQuerySchema(Schema):
@@ -15,20 +15,30 @@ class AnalogyQuerySchema(Schema):
     c = fields.Str()
     n = fields.Integer()
 
-# Response Schemas
-
-class NeighboursSchema(Schema):
-    word = fields.Str()
+class EmbeddingsQuerySchema(Schema):
+    words = fields.List(fields.Str())
     n = fields.Integer()
-    neighbours = fields.List(fields.Str())
+
+# Response Schemas
 
 class VectorSchema(Schema):
     word = fields.Str()
-    # TODO: Add fields describing vector representation of a word
+    vector = fields.List(fields.Float())
+
+class NeighboursSchema(Schema):
+    words = fields.List(fields.Str())
+    n = fields.Integer()
+    neighbours = fields.List(fields.List(fields.Tuple((fields.Str(), fields.Float()))))
 
 class AnalogySchema(Schema):
     a = fields.Str()
     b = fields.Str()
     c = fields.Str()
     n = fields.Integer()
-    completions = fields.List(fields.Str())
+    completions = fields.List(fields.Tuple((fields.Str(), fields.Float())))
+
+class EmbeddingSchema(Schema):
+    words = fields.List(fields.Str())
+    n = fields.Integer()
+    words_list = fields.List(fields.Str())
+    embeddings_list = fields.List(fields.List(fields.Float()))

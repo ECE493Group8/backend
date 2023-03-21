@@ -2,9 +2,15 @@ from flask import Flask
 from flask.views import MethodView
 from flask_smorest import Api, Blueprint, abort
 from traceback import print_exc
+from dotenv import load_dotenv
+import os
 
 from word2med import Word2Med
 from schemas import *
+
+# Load model location (set in .env file)
+load_dotenv()
+MODEL_PATH = os.getenv('WORD2MED_MODEL_PATH')
 
 # Init flask app
 app = Flask(__name__)
@@ -17,7 +23,7 @@ api = Api(app)
 blp = Blueprint("word2med", "word2med", url_prefix="/", description="Perform actions against the Word2Med model")
 
 # Init model
-model = Word2Med()
+model = Word2Med(MODEL_PATH)
 
 @blp.route('/vector')
 class Vector(MethodView):
@@ -26,7 +32,10 @@ class Vector(MethodView):
     def get(self, args):
         """Get the vector representation of a word"""
         try:
-            return VectorSchema().load({'word': args['word']})
+            return VectorSchema().load({
+                'word': args['word'],
+                'vector': model.get_vector(args['word']),
+            })
         except Exception as e:
             print_exc()
             abort(500)
@@ -36,14 +45,15 @@ class Neighbours(MethodView):
     @blp.arguments(NeighboursQuerySchema, location='query')
     @blp.response(200, NeighboursSchema)
     def get(self, args):
-        """Get the most similar vectors to a word
+        """From a list of words, get the most similar words to each of them
 
-        Returns a list of the n closest vectors to a given word, with the closest coming first.
+        For each input word, a list of the n closest words is returned, with the closest coming first.
         """
         try:
             return NeighboursSchema().load({
-                'neighbours': model.get_n_closest(args['word'], args['n']),
-                'n': args['n']
+                'words': args['words'],
+                'n': args['n'],
+                'neighbours': model.get_n_closest(args['words'], args['n']),
             })
         except Exception as e:
             print_exc()
@@ -59,7 +69,35 @@ class Analogy(MethodView):
         For words a, b, and c, get a list of n words d which complete the analogy "a is to b as c is to d"
         """
         try:
-            return AnalogySchema().load(args | {'completions': model.complete_analogy(*args)})
+            return AnalogySchema().load(args | {
+                'a': args['a'],
+                'b': args['b'],
+                'c': args['c'],
+                'n': args['n'],
+                'completions': model.complete_analogy(*args),
+            })
+        except:
+            print_exc()
+            abort(500)
+
+@blp.route('/embeddings')
+class Embeddings(MethodView):
+    @blp.arguments(EmbeddingsQuerySchema, location='query')
+    @blp.response(200, EmbeddingSchema)
+    def get(self, args):
+        """Get the embeddings of words and their neighbours
+
+        For the list of words, return a 2-dimensional embedding for each word and its neighbouring words.
+        """
+        try:
+            words_list, embeddings_list = \
+                    model.get_embeddings(args['words'], args['n'])
+            return EmbeddingSchema().load({
+                'words': args['words'],
+                'n': args['n'],
+                'words_list': args['words_list'],
+                'embeddings_list': args['embeddings_list'],
+            })
         except:
             print_exc()
             abort(500)
