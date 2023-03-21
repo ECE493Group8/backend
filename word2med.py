@@ -7,7 +7,11 @@ from models.word2vec import MalamudWord2Vec
 
 
 class Word2Med:
-    """The Word2Med model from a saved Word2Vec Gensim model"""
+    """The Word2Med model from a saved Word2Vec Gensim model
+    
+    Attributes:
+        model_path: A string containing a path to the trained model
+    """
 
     EMBEDDING_DIMENSION = 2
     TSNE_PERPLEXITY = 30.0
