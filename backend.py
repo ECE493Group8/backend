@@ -2,9 +2,15 @@ from flask import Flask
 from flask.views import MethodView
 from flask_smorest import Api, Blueprint, abort
 from traceback import print_exc
+from dotenv import load_dotenv
+import os
 
 from word2med import Word2Med
 from schemas import *
+
+# Load model location (set in .env file)
+load_dotenv()
+MODEL_PATH = os.getenv('WORD2MED_MODEL_PATH')
 
 # Init flask app
 app = Flask(__name__)
@@ -17,7 +23,7 @@ api = Api(app)
 blp = Blueprint("word2med", "word2med", url_prefix="/", description="Perform actions against the Word2Med model")
 
 # Init model
-model = Word2Med()
+model = Word2Med(MODEL_PATH)
 
 @blp.route('/vector')
 class Vector(MethodView):
