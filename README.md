@@ -4,6 +4,12 @@
 
 API documentation can be found [here](https://ece493group8.github.io/word2med-backend/)
 
+### Postman
+
+A [postman](https://www.postman.com/) collection with usage examples for each endpoint is exported to [`Word2Med.postman_collection.json`](./Word2Med.postman_collection.json).
+
+To use, simply import this file within [postman](https://www.postman.com/).
+
 ## Development Configuration
 
 Follow these steps to run the word2med backend locally
