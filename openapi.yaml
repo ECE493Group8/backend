@@ -112,22 +112,22 @@ paths:
         analogy "a is to b as c is to d"
       parameters:
       - in: query
-        name: b
+        name: n
         required: false
         schema:
-          type: string
+          type: integer
       - in: query
         name: c
         required: false
         schema:
           type: string
       - in: query
-        name: n
+        name: a
         required: false
         schema:
-          type: integer
+          type: string
       - in: query
-        name: a
+        name: b
         required: false
         schema:
           type: string

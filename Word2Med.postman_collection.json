@@ -1,0 +1,265 @@
+{
+	"info": {
+		"_postman_id": "07b7fa2d-c8d0-4546-8767-a1477b93d5ba",
+		"name": "Word2Med",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "25957943"
+	},
+	"item": [
+		{
+			"name": "Vector",
+			"item": [
+				{
+					"name": "Vector",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseURL}}/vector?word=pain",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"vector"
+							],
+							"query": [
+								{
+									"key": "word",
+									"value": "pain"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Neighbourhood",
+			"item": [
+				{
+					"name": "Neighbourhood single word",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseURL}}/neighbours?words=pain&n=5",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"neighbours"
+							],
+							"query": [
+								{
+									"key": "words",
+									"value": "pain"
+								},
+								{
+									"key": "n",
+									"value": "5"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Neighbourhood multiple words",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseURL}}/neighbours?words=pain&words=boy&n=5",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"neighbours"
+							],
+							"query": [
+								{
+									"key": "words",
+									"value": "pain"
+								},
+								{
+									"key": "words",
+									"value": "boy"
+								},
+								{
+									"key": "n",
+									"value": "5"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Analogy",
+			"item": [
+				{
+					"name": "Analogy",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseURL}}/analogy?a=man&b=woman&c=husband&n=5",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"analogy"
+							],
+							"query": [
+								{
+									"key": "a",
+									"value": "man"
+								},
+								{
+									"key": "b",
+									"value": "woman"
+								},
+								{
+									"key": "c",
+									"value": "husband"
+								},
+								{
+									"key": "n",
+									"value": "5"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Embeddings",
+			"item": [
+				{
+					"name": "Embeddings single word",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/embeddings?words=pain&n=10",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"embeddings"
+							],
+							"query": [
+								{
+									"key": "words",
+									"value": "pain"
+								},
+								{
+									"key": "n",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Embeddings multiple words",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/embeddings?words=back&words=pain&n=10",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"embeddings"
+							],
+							"query": [
+								{
+									"key": "words",
+									"value": "back"
+								},
+								{
+									"key": "words",
+									"value": "pain"
+								},
+								{
+									"key": "n",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseURL",
+			"value": "http://127.0.0.1:5000",
+			"type": "string"
+		},
+		{
+			"key": "devURL",
+			"value": "http://127.0.0.1:5000",
+			"type": "string"
+		},
+		{
+			"key": "prodURL",
+			"value": "http://129.128.215.93:5000",
+			"type": "string"
+		}
+	]
+}
