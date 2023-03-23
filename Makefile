@@ -24,3 +24,7 @@ restart:
 # Generate documentation yaml, hosted on github pages
 docs:
 	$(flask) openapi write --format=yaml openapi.yaml
+
+# Run unit tests - TODO: use for all tests once model is set up
+test:
+	pytest test_endpoints.py
