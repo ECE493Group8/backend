@@ -3,6 +3,7 @@ from flask.views import MethodView
 from flask_smorest import Api, Blueprint, abort
 from traceback import print_exc
 from dotenv import load_dotenv
+import logging
 import os
 
 from word2med import Word2Med
@@ -105,4 +106,4 @@ class Embeddings(MethodView):
 api.register_blueprint(blp)
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0')
