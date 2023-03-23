@@ -21,7 +21,7 @@ app.config["OPENAPI_VERSION"] = "3.0.2"
 api = Api(app)
 
 # Create blueprint
-blp = Blueprint("word2med", "word2med", url_prefix="/", description="Perform actions against the Word2Med model")
+blp = Blueprint("word2med", "word2med", url_prefix="/", description="Perform actions against the Word2Med model. Base URL: 129.128.215.93:5000")
 
 # Init model
 model = Word2Med(MODEL_PATH)

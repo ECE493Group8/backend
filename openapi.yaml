@@ -150,6 +150,11 @@ paths:
       description: For the list of words, return a 2-dimensional embedding for each
         word and its neighbouring words.
       parameters:
+      - in: query
+        name: n
+        required: false
+        schema:
+          type: integer
       - explode: true
         in: query
         name: words
@@ -159,11 +164,6 @@ paths:
             type: string
           type: array
         style: form
-      - in: query
-        name: n
-        required: false
-        schema:
-          type: integer
       responses:
         '200':
           content:
@@ -183,6 +183,11 @@ paths:
       description: For each input word, a list of the n closest words is returned,
         with the closest coming first.
       parameters:
+      - in: query
+        name: n
+        required: false
+        schema:
+          type: integer
       - explode: true
         in: query
         name: words
@@ -192,11 +197,6 @@ paths:
             type: string
           type: array
         style: form
-      - in: query
-        name: n
-        required: false
-        schema:
-          type: integer
       responses:
         '200':
           content:
@@ -234,5 +234,5 @@ paths:
       tags:
       - word2med
 tags:
-- description: Perform actions against the Word2Med model
+- description: 'Perform actions against the Word2Med model. Base URL: 129.128.215.93:5000'
   name: word2med
