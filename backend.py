@@ -75,7 +75,7 @@ class Analogy(MethodView):
                 'b': args['b'],
                 'c': args['c'],
                 'n': args['n'],
-                'completions': model.complete_analogy(*args),
+                'completions': model.complete_analogy(**args),
             })
         except:
             print_exc()
