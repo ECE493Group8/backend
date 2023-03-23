@@ -16,7 +16,7 @@ Follow these steps to run the word2med backend locally
 
 ### Setup
 
-Clone this repository and initialize a virtual environment in the root directory using the tool of your choice. (e.g. [virtualenv](https://virtualenv.pypa.io/en/latest/))
+Clone this repository and initialize a virtual environment in the root directory using the tool of your choice. (e.g. [virtualenv](https://virtualenv.pypa.io/en/latest/)). **Note that the virtual environment must use version python3.10 or greater.**
 
 ```bash
 git clone https://github.com/ECE493Group8/word2med-backend.git
@@ -34,6 +34,12 @@ Install dependencies from requirements.txt
 
 ```bash
 pip install -r requirements.txt
+```
+
+**Note:** If you have issues in this step, ensure you have the latest pip version by running the following with you venv activated:
+
+```
+curl -sS https://bootstrap.pypa.io/get-pip.py | python3.10
 ```
 
 ### Define model path
