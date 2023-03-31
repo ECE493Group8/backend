@@ -3,6 +3,7 @@ from flask.views import MethodView
 from flask_smorest import Api, Blueprint, abort
 from traceback import print_exc
 from dotenv import load_dotenv
+from flask_cors import CORS
 import logging
 import os
 
@@ -18,6 +19,7 @@ app = Flask(__name__)
 app.config["API_TITLE"] = "Word2Med API"
 app.config["API_VERSION"] = "v1"
 app.config["OPENAPI_VERSION"] = "3.0.2"
+CORS(app)
 api = Api(app)
 
 # Create blueprint
