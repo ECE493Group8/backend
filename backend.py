@@ -98,8 +98,8 @@ class Embeddings(MethodView):
             return EmbeddingSchema().load({
                 'words': args['words'],
                 'n': args['n'],
-                'words_list': args['words_list'],
-                'embeddings_list': args['embeddings_list'],
+                'words_list': words_list,
+                'embeddings_list': embeddings_list,
             })
         except:
             print_exc()
