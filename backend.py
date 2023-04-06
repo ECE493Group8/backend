@@ -10,23 +10,33 @@ import os
 from word2med import Word2Med
 from schemas import *
 
+# Init logging
+logging.basicConfig(format="%(asctime)s %(levelname)s %(name)s: %(message)s",
+                    filename='backend.log',
+                    level=logging.INFO,
+                    datefmt="%Y-%m-%d %H:%M:%S")
+logging.info("Starting Word2Med API")
+
 # Load model location (set in .env file)
 load_dotenv()
 MODEL_PATH = os.getenv('WORD2MED_MODEL_PATH')
 
 # Init flask app
+logging.info("Initializing Flask app...")
 app = Flask(__name__)
 app.config["API_TITLE"] = "Word2Med API"
 app.config["API_VERSION"] = "v1"
 app.config["OPENAPI_VERSION"] = "3.0.2"
 CORS(app)
 api = Api(app)
+logging.info("Flask app initialized")
 
 # Create blueprint
 blp = Blueprint("word2med", "word2med", url_prefix="/", description="Perform actions against the Word2Med model. Base URL: 129.128.215.93:5000")
 
 # Init model
 model = Word2Med(MODEL_PATH)
+logging.info("Model loaded")
 
 @blp.route('/vector')
 class Vector(MethodView):
@@ -35,6 +45,7 @@ class Vector(MethodView):
     def get(self, args):
         """Get the vector representation of a word"""
         try:
+            logging.info("Getting vector for word: " + args['word'])
             return VectorSchema().load({
                 'word': args['word'],
                 'vector': model.get_vector(args['word']),
@@ -53,6 +64,7 @@ class Neighbours(MethodView):
         For each input word, a list of the n closest words is returned, with the closest coming first.
         """
         try:
+            logging.info("Getting neighbours for words: " + str(args['words']))
             return NeighboursSchema().load({
                 'words': args['words'],
                 'n': args['n'],
@@ -72,6 +84,7 @@ class Analogy(MethodView):
         For words a, b, and c, get a list of n words d which complete the analogy "a is to b as c is to d"
         """
         try:
+            logging.info("Getting analogy completions for words: " + str(args['a']) + ", " + str(args['b']) + ", " + str(args['c']))
             return AnalogySchema().load(args | {
                 'a': args['a'],
                 'b': args['b'],
@@ -93,6 +106,7 @@ class Embeddings(MethodView):
         For the list of words, return a 2-dimensional embedding for each word and its neighbouring words.
         """
         try:
+            logging.info("Getting embeddings for words: " + str(args['words']))
             words_list, embeddings_list = \
                     model.get_embeddings(args['words'], args['n'])
             return EmbeddingSchema().load({
