@@ -27,4 +27,4 @@ docs:
 
 # Run unit tests - TODO: use for all tests once model is set up
 test:
-	pytest test_endpoints.py
+	pytest test_endpoints.py test_schemas.py test_word2med.py
