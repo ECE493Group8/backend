@@ -27,4 +27,4 @@ docs:
 
 # Run unit tests - TODO: use for all tests once model is set up
 test:
-	pytest test_endpoints.py test_schemas.py test_word2med.py
+	pytest --cov=word2med --cov=schemas --cov=backend test_word2med.py test_schemas.py test_endpoints.py --cov-report=term-missing

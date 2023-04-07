@@ -6,7 +6,7 @@ from word2med import Word2Med
 class Word2MedTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.model = Word2Med("./trained_models/test/test.model")
+        cls.model = Word2Med("test.model")
 
     def test_get_vector(self):
         word = "bad"
