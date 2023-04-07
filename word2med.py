@@ -116,12 +116,12 @@ class Word2Med:
         return words_list, embedded_vectors_list
 
 
-if __name__ == "__main__":
-    m = Word2Med("./trained_models/test/test.model")
+# if __name__ == "__main__":
+#     m = Word2Med("./trained_models/test/test.model")
 
-    from pprint import pprint
+#     from pprint import pprint
 
-    pprint(m.get_vector("bad"))
-    pprint(m.get_n_closest(["bad", "sucky", "good", "great"], 2))
-    print(m.complete_analogy("man", "waiter", "woman", 2))
-    pprint(m.get_embeddings(["bad", "sucky", "good", "great"], 10))
+#     pprint(m.get_vector("bad"))
+#     pprint(m.get_n_closest(["bad", "sucky", "good", "great"], 2))
+#     print(m.complete_analogy("man", "waiter", "woman", 2))
+#     pprint(m.get_embeddings(["bad", "sucky", "good", "great"], 10))
