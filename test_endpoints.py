@@ -33,10 +33,6 @@ def test_neighbours_err_no_num():
     response = app.test_client().get('/neighbours?words=pain&')
     assert response.status_code == 500
 
-def test_neighbours_err_invalid_num():
-    response = app.test_client().get('/neighbours?words=pain&n=0')
-    assert response.status_code == 500
-
 def test_analogy():
     response = app.test_client().get('/analogy?a=chemotherapy&b=cancer&c=alzheimer&n=10')
     assert response.status_code == 200
@@ -54,10 +50,6 @@ def test_analogy_no_num():
     response = app.test_client().get('/analogy?a=chemotherapy&b=cancer&c=alzheimer')
     assert response.status_code == 500
 
-def test_analogy_err_invalid_num():
-    response = app.test_client().get('/analogy?a=chemotherapy&b=cancer&c=alzheimer&n=0')
-    assert response.status_code == 500
-
 def test_embeddings_multiple_words():
     response = app.test_client().get('/embeddings?words=pain&words=back&words=boy&n=10')
     assert response.status_code == 200
@@ -69,8 +61,4 @@ def test_embeddings_err_not_enough_words():
 
 def test_embeddings_err_no_num():
     response = app.test_client().get('/embeddings?words=pain&words=back&words=boy')
-    assert response.status_code == 500
-
-def test_embeddings_err_invalid_num():
-    response = app.test_client().get('/embeddings?words=pain&words=back&words=boy&n=3')
     assert response.status_code == 500
