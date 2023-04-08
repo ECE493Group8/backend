@@ -6,7 +6,7 @@ from word2med import Word2Med
 class Word2MedTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.model = Word2Med("./trained_models/test/test.model")
+        cls.model = Word2Med("test.model")
 
     def test_get_vector(self):
         word = "bad"
@@ -55,3 +55,9 @@ class Word2MedTest(unittest.TestCase):
         self.assertIsInstance(embedded_vectors_list[0][0], float)
         self.assertEqual(len(embedded_vectors_list), (n + 1) * len(words))
         self.assertEqual(len(embedded_vectors_list[0]), 2)  # 2-dimensional embedding
+    
+    def test_get_embeddings_value_error(self):
+        words = ["bad", "sad"] #needs 3 words to work correctly
+        n = 12
+        with self.assertRaises(ValueError):
+            words_list, embedded_vectors_list = self.model.get_embeddings(words, n)

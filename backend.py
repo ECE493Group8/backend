@@ -85,7 +85,7 @@ class Analogy(MethodView):
         """
         try:
             logging.info("Getting analogy completions for words: " + str(args['a']) + ", " + str(args['b']) + ", " + str(args['c']))
-            return AnalogySchema().load(args | {
+            return AnalogySchema().load({
                 'a': args['a'],
                 'b': args['b'],
                 'c': args['c'],
@@ -121,5 +121,6 @@ class Embeddings(MethodView):
 
 api.register_blueprint(blp)
 
-if __name__ == "__main__":
-    app.run(debug=True, host='0.0.0.0')
+#for debug purposes:
+# if __name__ == "__main__":
+#     app.run(debug=True, host='0.0.0.0')
