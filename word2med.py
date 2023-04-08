@@ -74,7 +74,7 @@ class Word2Med:
         Raises:
             KeyError if the word is not in the model's vocabulary.
         """
-        return self.model.wv.most_similar(positive=[a, c], negative=[b], topn=n)
+        return self.model.wv.most_similar(positive=[b, c], negative=[a], topn=n)
 
     def get_embeddings(self,
                        words: List[str],
