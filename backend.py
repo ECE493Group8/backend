@@ -85,7 +85,7 @@ class Analogy(MethodView):
         """
         try:
             logging.info("Getting analogy completions for words: " + str(args['a']) + ", " + str(args['b']) + ", " + str(args['c']))
-            return AnalogySchema().load(args | {
+            return AnalogySchema().load({
                 'a': args['a'],
                 'b': args['b'],
                 'c': args['c'],
