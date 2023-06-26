@@ -24,8 +24,12 @@ components:
         completions:
           items: {}
           type: array
+        model:
+          type: string
         n:
           type: integer
+      required:
+      - model
       type: object
     Embedding:
       properties:
@@ -35,6 +39,8 @@ components:
               type: number
             type: array
           type: array
+        model:
+          type: string
         n:
           type: integer
         words:
@@ -45,6 +51,8 @@ components:
           items:
             type: string
           type: array
+      required:
+      - model
       type: object
     Error:
       properties:
@@ -63,6 +71,8 @@ components:
       type: object
     Neighbours:
       properties:
+        model:
+          type: string
         n:
           type: integer
         neighbours:
@@ -74,6 +84,8 @@ components:
           items:
             type: string
           type: array
+      required:
+      - model
       type: object
     PaginationMetadata:
       properties:
@@ -94,12 +106,16 @@ components:
       type: object
     Vector:
       properties:
+        model:
+          type: string
         vector:
           items:
             type: number
           type: array
         word:
           type: string
+      required:
+      - model
       type: object
 info:
   title: Word2Med API
@@ -108,14 +124,11 @@ openapi: 3.0.2
 paths:
   /analogy:
     get:
-      description: For words a, b, and c, get a list of n words d which complete the
-        analogy "a is to b as c is to d"
+      description: 'For words a, b, and c, get a list of n words d which complete
+        the
+
+        analogy "a is to b as c is to d"'
       parameters:
-      - in: query
-        name: n
-        required: false
-        schema:
-          type: integer
       - in: query
         name: a
         required: false
@@ -127,10 +140,20 @@ paths:
         schema:
           type: string
       - in: query
+        name: model
+        required: true
+        schema:
+          type: string
+      - in: query
         name: b
         required: false
         schema:
           type: string
+      - in: query
+        name: n
+        required: false
+        schema:
+          type: integer
       responses:
         '200':
           content:
@@ -147,9 +170,21 @@ paths:
       - word2med
   /embeddings:
     get:
-      description: For the list of words, return a 2-dimensional embedding for each
-        word and its neighbouring words.
+      description: 'For the list of words, return a 2-dimensional embedding for each
+        word
+
+        and its neighbouring words.'
       parameters:
+      - in: query
+        name: n
+        required: false
+        schema:
+          type: integer
+      - in: query
+        name: model
+        required: true
+        schema:
+          type: string
       - explode: true
         in: query
         name: words
@@ -159,11 +194,6 @@ paths:
             type: string
           type: array
         style: form
-      - in: query
-        name: n
-        required: false
-        schema:
-          type: integer
       responses:
         '200':
           content:
@@ -180,9 +210,21 @@ paths:
       - word2med
   /neighbours:
     get:
-      description: For each input word, a list of the n closest words is returned,
-        with the closest coming first.
+      description: 'For each input word, a list of the n closest words is returned,
+        with the
+
+        closest coming first.'
       parameters:
+      - in: query
+        name: n
+        required: false
+        schema:
+          type: integer
+      - in: query
+        name: model
+        required: true
+        schema:
+          type: string
       - explode: true
         in: query
         name: words
@@ -192,11 +234,6 @@ paths:
             type: string
           type: array
         style: form
-      - in: query
-        name: n
-        required: false
-        schema:
-          type: integer
       responses:
         '200':
           content:
@@ -214,6 +251,11 @@ paths:
   /vector:
     get:
       parameters:
+      - in: query
+        name: model
+        required: true
+        schema:
+          type: string
       - in: query
         name: word
         required: true
@@ -234,5 +276,5 @@ paths:
       tags:
       - word2med
 tags:
-- description: 'Perform actions against the Word2Med model. Base URL: 129.128.215.93:5000'
+- description: 'Perform actions against the Word2Med model.Base URL: 129.128.215.93:5000'
   name: word2med

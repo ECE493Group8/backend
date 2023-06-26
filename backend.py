@@ -1,14 +1,18 @@
+import json
+import logging
+from typing import Dict
+
 from flask import Flask
 from flask.views import MethodView
 from flask_smorest import Api, Blueprint, abort
-from traceback import print_exc
-from dotenv import load_dotenv
 from flask_cors import CORS
-import logging
-import os
+from traceback import print_exc
 
 from word2med import Word2Med
 from schemas import *
+
+MODELS_FILE = "./models.json"
+
 
 # Init logging
 logging.basicConfig(format="%(asctime)s %(levelname)s %(name)s: %(message)s",
@@ -17,9 +21,11 @@ logging.basicConfig(format="%(asctime)s %(levelname)s %(name)s: %(message)s",
                     datefmt="%Y-%m-%d %H:%M:%S")
 logging.info("Starting Word2Med API")
 
+
 # Load model location (set in .env file)
-load_dotenv()
-MODEL_PATH = os.getenv('WORD2MED_MODEL_PATH')
+with open(MODELS_FILE, "r") as f:
+    model_paths = json.load(f)
+
 
 # Init flask app
 logging.info("Initializing Flask app...")
@@ -31,12 +37,24 @@ CORS(app)
 api = Api(app)
 logging.info("Flask app initialized")
 
+
 # Create blueprint
-blp = Blueprint("word2med", "word2med", url_prefix="/", description="Perform actions against the Word2Med model. Base URL: 129.128.215.93:5000")
+blp = Blueprint("word2med",
+                "word2med",
+                url_prefix="/",
+                description=(
+                    "Perform actions against the Word2Med model."
+                    "Base URL: 129.128.215.93:5000"
+                ))
+
 
 # Init model
-model = Word2Med(MODEL_PATH)
-logging.info("Model loaded")
+models: Dict[str, Word2Med] = {}
+for model_id, model_path in model_paths.items():
+    logging.info(f"Loading model '{model_id}'")
+    models[model_id] = Word2Med(model_path)
+logging.info(f"Finished loading {len(models)} model(s)")
+
 
 @blp.route('/vector')
 class Vector(MethodView):
@@ -45,14 +63,18 @@ class Vector(MethodView):
     def get(self, args):
         """Get the vector representation of a word"""
         try:
-            logging.info("Getting vector for word: " + args['word'])
+            logging.info(f"Getting vector for word '{args['word']}' with model "
+                         f"'{args['model']}'")
+            model_id = args['model']
             return VectorSchema().load({
                 'word': args['word'],
-                'vector': model.get_vector(args['word']),
+                'model': args['model'],
+                'vector': models[model_id].get_vector(args['word']),
             })
         except Exception as e:
             print_exc()
             abort(500)
+
 
 @blp.route('/neighbours')
 class Neighbours(MethodView):
@@ -61,18 +83,24 @@ class Neighbours(MethodView):
     def get(self, args):
         """From a list of words, get the most similar words to each of them
 
-        For each input word, a list of the n closest words is returned, with the closest coming first.
+        For each input word, a list of the n closest words is returned, with the
+        closest coming first.
         """
         try:
-            logging.info("Getting neighbours for words: " + str(args['words']))
+            logging.info(f"Getting neighbours for words {args['words']} with "
+                         f"model {args['model']}")
+            model_id = args['model']
             return NeighboursSchema().load({
                 'words': args['words'],
                 'n': args['n'],
-                'neighbours': model.get_n_closest(args['words'], args['n']),
+                'model': args['model'],
+                'neighbours': models[model_id].get_n_closest(args['words'],
+                                                             args['n']),
             })
         except Exception as e:
             print_exc()
             abort(500)
+
 
 @blp.route('/analogy')
 class Analogy(MethodView):
@@ -81,20 +109,29 @@ class Analogy(MethodView):
     def get(self, args):
         """Get completions to an analogy
 
-        For words a, b, and c, get a list of n words d which complete the analogy "a is to b as c is to d"
+        For words a, b, and c, get a list of n words d which complete the
+        analogy "a is to b as c is to d"
         """
         try:
-            logging.info("Getting analogy completions for words: " + str(args['a']) + ", " + str(args['b']) + ", " + str(args['c']))
+            logging.info(f"Getting analogy completions for words "
+                         f"'{str(args['a'])}', '{str(args['b'])}', "
+                         f"'{str(args['c'])}' with model '{args['model']}'")
+            model_id = args['model']
             return AnalogySchema().load({
                 'a': args['a'],
                 'b': args['b'],
                 'c': args['c'],
                 'n': args['n'],
-                'completions': model.complete_analogy(**args),
+                'model': args['model'],
+                'completions': models[model_id].complete_analogy(args['a'],
+                                                                 args['b'],
+                                                                 args['c'],
+                                                                 args['n']),
             })
         except:
             print_exc()
             abort(500)
+
 
 @blp.route('/embeddings')
 class Embeddings(MethodView):
@@ -103,15 +140,19 @@ class Embeddings(MethodView):
     def get(self, args):
         """Get the embeddings of words and their neighbours
 
-        For the list of words, return a 2-dimensional embedding for each word and its neighbouring words.
+        For the list of words, return a 2-dimensional embedding for each word
+        and its neighbouring words.
         """
         try:
-            logging.info("Getting embeddings for words: " + str(args['words']))
+            logging.info(f"Getting embeddings for words {str(args['words'])} "
+                         f"with model '{args['model']}'")
+            model_id = args['model']
             words_list, embeddings_list = \
-                    model.get_embeddings(args['words'], args['n'])
+                    models[model_id].get_embeddings(args['words'], args['n'])
             return EmbeddingSchema().load({
                 'words': args['words'],
                 'n': args['n'],
+                'model': args['model'],
                 'words_list': words_list,
                 'embeddings_list': embeddings_list,
             })
@@ -119,8 +160,10 @@ class Embeddings(MethodView):
             print_exc()
             abort(500)
 
+
 api.register_blueprint(blp)
 
-#for debug purposes:
+
+# For debug purposes:
 # if __name__ == "__main__":
 #     app.run(debug=True, host='0.0.0.0')

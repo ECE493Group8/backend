@@ -7,6 +7,8 @@ from schemas import (
     VectorSchema
 )
 
+TEST_MODEL_ID = "model_test"
+
 
 class SchemasTest(unittest.TestCase):
     def test_vector_schema(self):
@@ -14,6 +16,7 @@ class SchemasTest(unittest.TestCase):
         vector = [1., 2., 3.]
         VectorSchema().load({
             'word': word,
+            'model': TEST_MODEL_ID,
             'vector': vector,
         })
 
@@ -26,6 +29,7 @@ class SchemasTest(unittest.TestCase):
         NeighboursSchema().load({
             'words': words,
             'n': n,
+            'model': TEST_MODEL_ID,
             'neighbours': neighbours,
         })
 
@@ -41,6 +45,7 @@ class SchemasTest(unittest.TestCase):
             'b': b,
             'c': c,
             'n': n,
+            'model': TEST_MODEL_ID,
             'completions': completions,
         })
 
@@ -57,6 +62,7 @@ class SchemasTest(unittest.TestCase):
             'words': words,
             'n': n,
             'words_list': words_list,
+            'model': TEST_MODEL_ID,
             'embeddings_list': embeddings_list,
         })
 
