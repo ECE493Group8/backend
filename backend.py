@@ -53,6 +53,9 @@ models: Dict[str, Word2Med] = {}
 for model_id, model_path in model_paths.items():
     logging.info(f"Loading model '{model_id}'")
     models[model_id] = Word2Med(model_path)
+    # Perform a query of the model to cache model data for faster future
+    # queries.
+    models[model_id].get_n_closest(["word"], n=10)
 logging.info(f"Finished loading {len(models)} model(s)")
 
 
