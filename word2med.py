@@ -33,6 +33,7 @@ class Word2Med:
         Raises:
             KeyError if the word is not in the model's vocabulary.
         """
+        word = self._clean_input_word(word)
         return self.model.wv[word].tolist()
 
     def get_n_closest(self,
@@ -54,7 +55,16 @@ class Word2Med:
         Raises:
             KeyError if the word is not in the model's vocabulary.
         """
-        return [self.model.wv.most_similar(word, topn=n) for word in words]
+        words = [self._clean_input_word(word) for word in words]
+        result = [
+            [
+                (self._clean_output_word(output_word), similarity)
+                for output_word, similarity
+                in self.model.wv.most_similar(word, topn=n)
+            ]
+            for word in words
+        ]
+        return result
 
     def complete_analogy(self, a: str, b: str, c: str, n: int) -> List[Tuple[str, float]]:
         """Completes the analogy "a is to b as c is to ...".
@@ -74,7 +84,15 @@ class Word2Med:
         Raises:
             KeyError if the word is not in the model's vocabulary.
         """
-        return self.model.wv.most_similar(positive=[b, c], negative=[a], topn=n)
+        a = self._clean_input_word(a)
+        b = self._clean_input_word(b)
+        c = self._clean_input_word(c)
+        result = self.model.wv.most_similar(positive=[b, c],
+                                            negative=[a],
+                                            topn=n)
+        result = [(self._clean_output_word(word), similarity)
+                  for word, similarity in result]
+        return result
 
     def get_embeddings(self,
                        words: List[str],
@@ -86,17 +104,18 @@ class Word2Med:
             ValueError if the number of words to embed is less than
                 TSNE_PERPLEXITY.
         """
+        words = [self._clean_input_word(word) for word in words]
         words_list = []
         vectors_list = []
         for word in words:
             # Append the current word and its vector to the word list and vector
             # list.
-            words_list.append(word)
+            words_list.append(self._clean_output_word(word))
             vectors_list.append(self.model.wv[word])
             # For each similar word to the current word, append the similar word
             # and its vector to the word list and vector list.
             for similar_word, _ in self.model.wv.most_similar(word, topn=n):
-                words_list.append(similar_word)
+                words_list.append(self._clean_output_word(similar_word))
                 vectors_list.append(self.model.wv[similar_word])
 
         # We have to have at least TSNE_PERPLEXITY vectors to embed in order for
@@ -114,6 +133,17 @@ class Word2Med:
         embedded_vectors_list = embedded_vectors.tolist()
 
         return words_list, embedded_vectors_list
+
+    def _clean_input_word(self, word: str) -> str:
+        word = word.strip()
+        word = word.lower()
+        word = word.replace(" ", "_")
+        return word
+    
+    def _clean_output_word(self, word: str) -> str:
+        word = word.strip("_")
+        word = word.replace("_", " ")
+        return word
 
 
 # if __name__ == "__main__":

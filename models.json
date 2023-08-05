@@ -1,3 +1,5 @@
 {
-  "model_test": "/home/chris/backend/trained_models/test/test.model"
+  "model_keywords_5": "/storage8TB/train_keywords/model_4.model",
+  "model_ngrams_5": "/storage8TB/train_ngrams_1/model_5.model",
+  "model_ngrams_10": "/storage8TB/train_ngrams/model_5.model"
 }
