@@ -74,9 +74,15 @@ class Vector(MethodView):
                 'model': args['model'],
                 'vector': models[model_id].get_vector(args['word']),
             })
+        except KeyError as e:
+            print_exc()
+            abort(
+                500,
+                {"message": "Some word(s) are not in the model's vocabulary!"}
+            )
         except Exception as e:
             print_exc()
-            abort(500)
+            abort(500, {"message": "An error has occurred!"})
 
 
 @blp.route('/neighbours')
@@ -100,9 +106,15 @@ class Neighbours(MethodView):
                 'neighbours': models[model_id].get_n_closest(args['words'],
                                                              args['n']),
             })
+        except KeyError as e:
+            print_exc()
+            abort(
+                500,
+                {"message": "Some word(s) are not in the model's vocabulary!"}
+            )
         except Exception as e:
             print_exc()
-            abort(500)
+            abort(500, {"message": "An error has occurred!"})
 
 
 @blp.route('/analogy')
@@ -131,9 +143,15 @@ class Analogy(MethodView):
                                                                  args['c'],
                                                                  args['n']),
             })
+        except KeyError as e:
+            print_exc()
+            abort(
+                500,
+                {"message": "Some word(s) are not in the model's vocabulary!"}
+            )
         except:
             print_exc()
-            abort(500)
+            abort(500, {"message": "An error has occurred!"})
 
 
 @blp.route('/embeddings')
@@ -159,9 +177,15 @@ class Embeddings(MethodView):
                 'words_list': words_list,
                 'embeddings_list': embeddings_list,
             })
+        except KeyError as e:
+            print_exc()
+            abort(
+                500,
+                {"message": "Some word(s) are not in the model's vocabulary!"}
+            )
         except:
             print_exc()
-            abort(500)
+            abort(500, {"message": "An error has occurred!"})
 
 
 api.register_blueprint(blp)
